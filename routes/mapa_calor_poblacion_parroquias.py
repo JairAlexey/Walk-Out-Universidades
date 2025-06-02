@@ -31,4 +31,8 @@ GJSON_PARADAS = os.path.join(DATA_DIR, "paradasBuses.geojson")
 # =========================================================
 @mapa_poblacion_parroquias_bp.route("/mapacalor/poblacion-parroquias")
 def mapa():
- return
+ return render_template(
+        "mapa_calor_poblacionParroquias.html",
+        title="Mapa de Calor - Población por Parroquias",
+        ruta_activa="poblacion"
+)

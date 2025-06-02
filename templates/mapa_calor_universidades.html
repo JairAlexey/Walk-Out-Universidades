@@ -1,16 +1,11 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Mapa de Calor Universidades</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet"
-        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
-    #map { position:absolute; top:0; bottom:0; right:0; left:0; }
+{% extends "layout.html" %}
 
+{% block title %}Mapa de Calor Universidades{% endblock %}
+
+{% block content %}
+  <style>
     /* ---- Sidebar Carreras ---- */
-    #sidebar-carreras { position:absolute; top:90px; left:10px; width:600px; z-index:1000; }
+    #sidebar-carreras { position:absolute; top:140px; left:10px; width:600px; z-index:1000; }
     #sidebar-carreras .card      { max-height:80vh; overflow:hidden; box-shadow:0 0 6px rgba(0,0,0,.3); }
     #sidebar-carreras .card-body { overflow-y:auto; max-height:calc(80vh - 56px); padding:.5rem 1rem; }
 
@@ -25,18 +20,7 @@
     #sidebar-carreras input[type="checkbox"]{ margin-right:.4em; }
     #sidebar-carreras label{ cursor:pointer; }
 
-    #top-controls {
-      position:absolute; top:10px; left:50%; transform:translateX(-50%);
-      z-index:1000;
-      background:rgba(255,255,255,.9);
-      padding:.5rem 1rem;
-      border-radius:4px;
-      box-shadow:0 0 4px rgba(0,0,0,.2);
-    }
-
   </style>
-</head>
-<body>
 
   <div id="top-controls">
     <form method="get" action="/mapacalor/universidades">
@@ -47,9 +31,7 @@
         {% endfor %}
       </select>
     </form>
-
     <button type="button" class="btn btn-sm btn-outline-secondary ml-2" onclick="toggleSidebar()">Mostrar/Ocultar Filtro</button>
-
   </div>
 
   <!-- Sidebar Carreras -->
@@ -81,73 +63,57 @@
             </div>
           </details>
         {% endfor %}
-
       </div>
     </div>
   </div>
 
   <div id="map">{{ mapa|safe }}</div>
+{% endblock %}
 
-  <!-- ──────────────── Script de filtrado ──────────────── -->
-  <script>
-    /* Sincroniza hijos ↔ facultad */
-    function toggleChildren(facId){
-      const parentChecked = document.getElementById(facId).checked;
-
-      document.querySelectorAll(`input.child[data-facultad="${facId}"]`).forEach(cb => {
-        cb.checked = parentChecked;
-        cb.dispatchEvent(new Event('change'));
-      });
-    }
-
-
-    /* carreras seleccionadas */
-    function selectedCareers(){
-      return Array.from(document.querySelectorAll('#sidebar-carreras input.child:checked'))
-                  .map(cb=>cb.nextElementSibling.textContent.trim());
-    }
-
-    /* mostrar / ocultar marcador Leaflet */
-    function toggleDisplay(m, show){
-      const d = show ? '' : 'none';
-      if (m._icon)   m._icon.style.display   = d;
-      if (m._shadow) m._shadow.style.display = d;
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const mapObj = window["{{ map_name }}"];   // 'map_xxxxx'
-
-      /* principal */
-      window.updateUniversityMarkers = function(){
-        const chosen = selectedCareers();
-
-        const visibles = [];
-        mapObj.eachLayer(l=>{
-          if(l instanceof L.Marker && Array.isArray(l.options.careers)){
-            const show = chosen.length===0 ||
-                         l.options.careers.some(c=>chosen.includes(c));
-            toggleDisplay(l, show);
-            if(show) visibles.push(l.options.title || '(sin título)');
-          }
-        });
-      };
-
-      /* listeners en todos los checkbox */
-      document.querySelectorAll('#sidebar-carreras input')
-              .forEach(cb=>cb.addEventListener('change', updateUniversityMarkers));
-
-      updateUniversityMarkers();   // al iniciar
+{% block scripts %}
+<script>
+  function toggleChildren(facId){
+    const parentChecked = document.getElementById(facId).checked;
+    document.querySelectorAll(`input.child[data-facultad="${facId}"]`).forEach(cb => {
+      cb.checked = parentChecked;
+      cb.dispatchEvent(new Event('change'));
     });
+  }
 
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar-carreras');
-      if (sidebar.style.display === 'none') {
-        sidebar.style.display = 'block';
-      } else {
-        sidebar.style.display = 'none';
-      }
-    }
-  </script>
+  function selectedCareers(){
+    return Array.from(document.querySelectorAll('#sidebar-carreras input.child:checked'))
+                .map(cb => cb.nextElementSibling.textContent.trim());
+  }
 
-</body>
-</html>
+  function toggleDisplay(m, show){
+    const d = show ? '' : 'none';
+    if (m._icon)   m._icon.style.display   = d;
+    if (m._shadow) m._shadow.style.display = d;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const mapObj = window["{{ map_name }}"];
+    window.updateUniversityMarkers = function(){
+      const chosen = selectedCareers();
+      const visibles = [];
+      mapObj.eachLayer(l => {
+        if (l instanceof L.Marker && Array.isArray(l.options.careers)) {
+          const show = chosen.length === 0 || l.options.careers.some(c => chosen.includes(c));
+          toggleDisplay(l, show);
+          if (show) visibles.push(l.options.title || '(sin título)');
+        }
+      });
+    };
+
+    document.querySelectorAll('#sidebar-carreras input')
+            .forEach(cb => cb.addEventListener('change', updateUniversityMarkers));
+
+    updateUniversityMarkers();
+  });
+
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar-carreras');
+    sidebar.style.display = sidebar.style.display === 'none' ? 'block' : 'none';
+  }
+</script>
+{% endblock %}

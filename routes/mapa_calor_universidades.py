@@ -319,4 +319,5 @@ def mapa():
         periodos=periodos,
         selected_periodo=selected_periodo,
         facultades=facultades_por_nivel,
+        ruta_activa="universidades",
     )

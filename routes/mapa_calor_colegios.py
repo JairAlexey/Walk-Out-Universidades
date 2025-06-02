@@ -290,4 +290,5 @@ def mapa():
         map_name=m.get_name(),
         periodos=periodos,
         selected_periodo=selected_periodo,
+        ruta_activa="colegios"  
     )
