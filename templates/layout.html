@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Mi aplicación Flask{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      padding-top: 100px; /* Deja espacio para la navbar fija */
+    }
+
+    #map {
+      width: 100%;
+      height: 100vh; /* Ocupa toda la altura de la ventana */
+      position: relative;
+    }
+
+    #top-controls {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: rgba(255, 255, 255, .9);
+      padding: .5rem 1rem;
+      border-radius: 4px;
+      box-shadow: 0 0 4px rgba(0, 0, 0, .2);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar fija en la parte superior -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="/">Walk Out Universidades</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarNav" aria-controls="navbarNav"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="/">Alimentadores</a></li>
+        <li class="nav-item"><a class="nav-link" href="/mapacalor/colegios">Colegios</a></li>
+        <li class="nav-item"><a class="nav-link" href="/mapa_empresas">Población parroquias</a></li>
+        <li class="nav-item"><a class="nav-link" href="/mapa_universidades">Universidades</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Contenedor general para el contenido -->
+  <div class="container-fluid">
+    {% block content %}
+    {% endblock %}
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
